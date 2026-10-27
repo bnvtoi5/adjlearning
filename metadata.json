@@ -1,0 +1,6 @@
+{
+  "name": "PrepMaster — Học Cụm Tính Từ & Giới Từ",
+  "description": "Ứng dụng học, tra cứu phân loại và luyện phản xạ 196 cụm Tính từ đi với Giới từ (Adjective + Preposition) có đồng bộ hóa nhẹ cho học sinh trên điện thoại và máy tính.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
