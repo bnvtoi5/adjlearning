@@ -4,7 +4,7 @@
  */
 
 import React, { useState, useEffect, useMemo } from 'react';
-import { Search, Layers, Play, BookOpen, CheckCircle2 } from 'lucide-react';
+import { Search, Play, BookOpen, CheckCircle2 } from 'lucide-react';
 import {
   COLLOCATIONS,
   MasteryStatus,
@@ -18,23 +18,16 @@ import {
   ProgressMap,
 } from './utils/studyLogic';
 import { BrowseView } from './components/BrowseView';
-import { DecksView } from './components/DecksView';
 import { QuizView } from './components/QuizView';
 import { GrammarView } from './components/GrammarView';
 import { SyncModal } from './components/SyncModal';
 
-type ActiveTab = 'browse' | 'decks' | 'quiz' | 'grammar';
+type ActiveTab = 'browse' | 'quiz' | 'grammar';
 
 const STORAGE_PROGRESS_KEY = 'prepmaster_local_progress_v1';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<ActiveTab>('browse');
-  const [selectedDeckForStudy, setSelectedDeckForStudy] = useState<string | null>(
-    null
-  );
-  const [selectedDeckForQuiz, setSelectedDeckForQuiz] = useState<string | null>(
-    null
-  );
   const [isSyncOpen, setIsSyncOpen] = useState(false);
 
   const [progress, setProgress] = useState<ProgressMap>(() => {
@@ -109,7 +102,7 @@ export default function App() {
   return (
     <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900 pb-20 md:pb-12">
       {/* Top Bar Contract: 3 Zones separated by gap-8 */}
-      <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between gap-8">
+      <header className="bg-white border-b border-slate-200 px-4 sm:px-8 py-3 flex items-center justify-between gap-4 sm:gap-8">
         {/* Zone 1: Single text element wordmark */}
         <a
           href="#top"
@@ -122,7 +115,7 @@ export default function App() {
           PrepMaster
         </a>
 
-        {/* Zone 2: 4 concise single-line text navigation links */}
+        {/* Zone 2: 3 concise single-line text navigation links */}
         <nav
           className="hidden md:flex items-center gap-6 text-sm font-medium text-slate-600"
           aria-label="Điều hướng chính"
@@ -140,20 +133,6 @@ export default function App() {
           </button>
           <button
             type="button"
-            onClick={() => {
-              setSelectedDeckForStudy(null);
-              setActiveTab('decks');
-            }}
-            className={`py-1 whitespace-nowrap shrink-0 border-b-2 ${
-              activeTab === 'decks'
-                ? 'text-slate-900 border-sky-600 font-semibold'
-                : 'border-transparent hover:text-slate-900'
-            }`}
-          >
-            Phân bộ học
-          </button>
-          <button
-            type="button"
             onClick={() => setActiveTab('quiz')}
             className={`py-1 whitespace-nowrap shrink-0 border-b-2 ${
               activeTab === 'quiz'
@@ -161,7 +140,7 @@ export default function App() {
                 : 'border-transparent hover:text-slate-900'
             }`}
           >
-            Trắc nghiệm
+            Luyện 6 Quiz
           </button>
           <button
             type="button"
@@ -176,12 +155,12 @@ export default function App() {
           </button>
         </nav>
 
-        {/* Zone 3: 1 primary action (Local Progress & Backup/Sync) */}
-        <div className="flex items-center gap-3 shrink-0">
+        {/* Zone 3: Local Progress */}
+        <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={() => setIsSyncOpen(true)}
-            className="min-h-[38px] px-3.5 py-1.5 text-xs font-semibold text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
+            className="min-h-[38px] px-3 sm:px-3.5 py-1.5 text-xs font-semibold text-white bg-slate-900 rounded-xl hover:bg-slate-800 transition-colors flex items-center gap-1.5 whitespace-nowrap shrink-0"
           >
             <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
             <span>Đã thuộc {stats.mastered}/196</span>
@@ -203,24 +182,9 @@ export default function App() {
           />
         )}
 
-        {activeTab === 'decks' && (
-          <DecksView
-            key={selectedDeckForStudy || 'decks-root'}
-            progress={progress}
-            initialDeckId={selectedDeckForStudy}
-            onUpdateStatus={handleUpdateStatus}
-            onLaunchQuizForDeck={(deckId) => {
-              setSelectedDeckForQuiz(deckId);
-              setActiveTab('quiz');
-            }}
-          />
-        )}
-
         {activeTab === 'quiz' && (
           <QuizView
-            key={selectedDeckForQuiz || 'quiz-root'}
             progress={progress}
-            initialDeckId={selectedDeckForQuiz}
             onUpdateStatus={handleUpdateStatus}
           />
         )}
@@ -252,16 +216,16 @@ export default function App() {
       {/* Quiet Footer on Desktop */}
       <footer className="hidden md:flex max-w-7xl w-full mx-auto px-8 pt-8 pb-4 text-xs text-slate-500 items-center justify-between gap-2">
         <div>
-          PrepMaster — Học liệu chuẩn hóa 196 cụm Tính từ + Giới từ (Lưu trữ độc lập trên từng thiết bị).
+          PrepMaster — Học liệu chuẩn hóa 196 cụm Tính từ + Giới từ (Combo 6 dạng Quiz / từ).
         </div>
         <div>
           Đã thuộc {stats.mastered}/196 cụm ({stats.percentMastered}%)
         </div>
       </footer>
 
-      {/* Mobile Fixed Bottom Navigation Bar (56px height = 6.6% of 844px viewport) */}
+      {/* Mobile Fixed Bottom Navigation Bar (3 Tabs: Tra cứu | Luyện 6 Quiz | Ngữ pháp) */}
       <nav
-        className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 bg-white/95 backdrop-blur-md border-t border-slate-200 grid grid-cols-4 items-center"
+        className="md:hidden fixed bottom-0 left-0 right-0 z-40 h-14 bg-white/95 backdrop-blur-md border-t border-slate-200 grid grid-cols-3 items-center"
         aria-label="Điều hướng di động"
       >
         <button
@@ -277,27 +241,13 @@ export default function App() {
 
         <button
           type="button"
-          onClick={() => {
-            setSelectedDeckForStudy(null);
-            setActiveTab('decks');
-          }}
-          className={`h-full flex flex-col items-center justify-center gap-0.5 ${
-            activeTab === 'decks' ? 'text-sky-600 font-semibold' : 'text-slate-600'
-          }`}
-        >
-          <Layers className="w-5 h-5" />
-          <span className="text-[11px] whitespace-nowrap">Phân bộ</span>
-        </button>
-
-        <button
-          type="button"
           onClick={() => setActiveTab('quiz')}
           className={`h-full flex flex-col items-center justify-center gap-0.5 ${
             activeTab === 'quiz' ? 'text-sky-600 font-semibold' : 'text-slate-600'
           }`}
         >
           <Play className="w-5 h-5" />
-          <span className="text-[11px] whitespace-nowrap">Trắc nghiệm</span>
+          <span className="text-[11px] whitespace-nowrap">Luyện 6 Quiz</span>
         </button>
 
         <button
